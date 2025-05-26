@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: querypilot-flask-app
+Version: 1.0.0
+Summary: NLP-powered SQL generator and Flask web app for QueryPilot
+Author: Your Name
+Requires-Dist: flask
+Requires-Dist: pandas
+Requires-Dist: requests
+Requires-Dist: python-dotenv
+Dynamic: author
+Dynamic: requires-dist
+Dynamic: summary
