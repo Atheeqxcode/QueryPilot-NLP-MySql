@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QueryPilot</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #000000, #991b1b);
+    }
+  </style>
+</head>
+<body class="gradient-bg text-white flex flex-col min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-50 bg-gray-900 bg-opacity-75 py-5 px-6 flex justify-between items-center shadow-lg">
+    <div class="text-2xl font-bold text-white">QueryPilot</div>
+    <ul class="flex space-x-8 items-center">
+      <li><a href="/home" class="hover:text-red-400 font-medium transition">Home</a></li>
+      <li><a href="/main" class="hover:text-red-400 font-medium transition">Query</a></li>
+      <li><a href="#features" class="hover:text-red-400 font-medium transition">Features</a></li>
+      <li><a href="#contact" class="hover:text-red-400 font-medium transition">Contact</a></li>
+      <li><a href="#about" class="hover:text-red-400 font-medium transition">About</a></li>
+    </ul>
+    <div class="relative group ml-4">
+      <button class="flex items-center space-x-2">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span class="font-medium">Profile</span>
+      </button>
+      <div class="absolute right-0 mt-2 w-32 bg-gray-800 rounded-md shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-200 z-10">
+        <button class="w-full flex items-center px-4 py-2 text-sm text-white hover:bg-gray-700">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+          </svg>
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="flex-grow flex flex-col justify-center items-start px-8 lg:px-24 py-16">
+    <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+      QueryPilot: Using NLP & Generative AI to Simplify Database Queries
+    </h1>
+    <p class="max-w-2xl text-gray-200 text-lg lg:text-xl">
+      QueryPilot transforms natural language into SQL, enabling anyone to query databases with plain English. This AI-powered tool bridges the gap between non-technical users and complex data systems, boosting efficiency and reducing errors across industries from e-commerce to healthcare.
+    </p>
+  </header>
+
+  <!-- Features Section -->
+  <section id="features" class="bg-gray-900 bg-opacity-50 py-16 px-8 lg:px-24">
+    <h2 class="text-4xl font-semibold text-red-400 mb-12 text-center">Key Features</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+        <h3 class="text-2xl font-bold mb-4">Upload Databases</h3>
+        <p class="text-gray-300 text-sm">Easily upload multiple CSV files to build your database in seconds.</p>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+        <h3 class="text-2xl font-bold mb-4">Natural Language Query</h3>
+        <p class="text-gray-300 text-sm">Type your questions in plain English—no SQL syntax required.</p>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+        <h3 class="text-2xl font-bold mb-4">Instant SQL Generation</h3>
+        <p class="text-gray-300 text-sm">Leverage AI to generate optimized SQL queries in real time.</p>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+        <h3 class="text-2xl font-bold mb-4">Export Results</h3>
+        <p class="text-gray-300 text-sm">Download query results as Excel or PDF with a single click.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+<section id="about" class="bg-gray-900 bg-opacity-50 py-16 px-8 lg:px-24">
+  <h2 class="text-4xl font-semibold text-red-400 mb-6">About QueryPilot</h2>
+  <p class="max-w-3xl text-gray-200 text-base lg:text-lg mb-6">
+    QueryPilot is built to bridge the gap between everyday users and complex databases. By leveraging state-of-the-art Natural Language Processing (NLP) and Generative AI models, it empowers users to generate SQL queries using simple English instructions. Our mission is to make data access faster, smarter, and more intuitive across various industries such as healthcare, finance, and e-commerce.
+  </p>
+  <div class="text-gray-300 text-base lg:text-lg">
+    <h3 class="text-xl text-white font-semibold mb-2">Team Members</h3>
+    <ul class="list-disc list-inside space-y-1">
+      <li><strong>Developer Team:</strong> Atheeq Ur Rehman, Ashwin Dhungana</li>
+      <li><strong>Documentation & Research Team:</strong> Junaid Mehraj, Mohammed Rayan</li>
+    </ul>
+  </div>
+</section>
+
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-16 px-8 lg:px-24">
+    <h2 class="text-4xl font-semibold text-red-400 mb-8 text-center">Contact Us</h2>
+    <form class="max-w-2xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
+      <div class="mb-4">
+        <label for="name" class="block text-white font-medium mb-2">Name</label>
+        <input type="text" id="name" name="name" class="w-full p-3 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-red-400" required />
+      </div>
+      <div class="mb-4">
+        <label for="email" class="block text-white font-medium mb-2">Email</label>
+        <input type="email" id="email" name="email" class="w-full p-3 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-red-400" required />
+      </div>
+      <div class="mb-4">
+        <label for="message" class="block text-white font-medium mb-2">Message</label>
+        <textarea id="message" name="message" rows="4" class="w-full p-3 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-red-400" required></textarea>
+      </div>
+      <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded transition">Send Message</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 bg-opacity-75 mt-auto py-10">
+    <div class="text-center">
+      <p class="text-gray-400 text-sm">&copy; 2025 QueryPilot. Developed with ❤ by Atheeq &amp; Co.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

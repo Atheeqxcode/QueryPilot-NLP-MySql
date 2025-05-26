@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QueryPilot</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <!-- jsPDF and SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Add pointer cursor for interactive buttons */
+    button,
+    .group {
+      cursor: pointer;
+    }
+    /* Tooltip styling for copy/download buttons */
+    .group:hover .group-hover\:opacity-100 {
+      opacity: 1 !important;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top: 4px solid #f87171;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes slide-in {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .animate-slide-in {
+      animation: slide-in 0.3s ease forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-800 text-white min-h-screen">
+  <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 min-h-screen">
+    <!-- Sidebar -->
+    <aside class="bg-gray-900 p-6 md:col-span-1 flex flex-col gap-6">
+  <h2 class="text-2xl font-bold text-red-400">QueryPilot</h2>
+  <p class="text-sm text-gray-400">Select a database to begin:</p>
+
+  <!-- Dropdown to select an existing database -->
+  <div>
+    <label for="db-select" class="block mb-2 text-sm text-white">Database</label>
+    <select id="db-select" name="db-select" class="w-full p-2 bg-gray-700 text-white rounded">
+      {% if databases and databases|length > 0 %}
+        {% for db in databases|unique %}
+          <option value="{{ db }}" {% if db == selected_db %}selected{% endif %}>{{ db }}</option>
+        {% endfor %}
+      {% else %}
+        <option value="">No databases found</option>
+      {% endif %}
+    </select>
+  </div>
+
+  <!-- Upload new database (multiple CSV files) -->
+  <form action="/upload-database" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+    <div>
+      <label for="db-upload" class="block mb-2 text-sm text-white">Upload New Database (.csv)</label>
+      <input 
+        type="file" 
+        id="db-upload" 
+        name="db-upload" 
+        accept=".csv" 
+        multiple
+        class="w-full p-2 bg-gray-700 text-white rounded cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600"
+      />
+    </div>
+
+    <button 
+      type="submit" 
+      class="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+      Upload Database
+    </button>
+  </form>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
+
+    <!-- Main Content -->
+    <main class="md:col-span-3 lg:col-span-4 p-6 space-y-6">
+      <!-- Header -->
+      <div>
+        <h1 class="text-3xl font-bold mb-2">NLP-Powered SQL Generator</h1>
+        <p class="text-gray-400 text-sm">Generate SQL queries from plain English and view results instantly.</p>
+      </div>
+
+      <!-- Input Box -->
+      <div class="bg-gray-900 p-6 rounded-lg shadow-lg">
+        <label for="natural-language-query" class="block mb-2 text-sm">Natural Language Query</label>
+        <input
+          type="text"
+          id="natural-language-query"
+          placeholder="Enter your query here"
+          class="w-full p-3 bg-gray-700 text-white rounded mb-4"
+        />
+        <button
+          onclick="handleQuery()"
+          class="w-full bg-red-700 hover:bg-red-800 transition p-3 rounded font-semibold"
+        >
+          Generate SQL Query
+        </button>
+      </div>
+
+      <!-- SQL Display -->
+      <div class="bg-gray-900 p-6 rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">Generated SQL Query</h2>
+          <button onclick="copyToClipboard()" class="group relative text-gray-300 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M16 4H8v2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-3V4zM8 4a2 2 0 012-2h4a2 2 0 012 2"/>
+            </svg>
+            <span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs rounded bg-black text-white opacity-0 group-hover:opacity-100 transition">
+              Copy to Clipboard
+            </span>
+          </button>
+        </div>
+        <textarea
+          id="sql-query"
+          rows="4"
+          class="w-full p-3 bg-gray-700 text-white rounded"
+          readonly
+        ></textarea>
+      </div>
+
+      <!-- Results -->
+      <div class="bg-gray-900 p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">Query Results</h2>
+        <div id="results" class="overflow-x-auto"></div>
+
+        <!-- Export Buttons -->
+        <div id="export-buttons" class="mt-4 flex gap-3 hidden">
+          <button type="button" onclick="exportToExcel()" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 text-sm rounded text-white font-medium transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4H8v2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-3V4z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 16l2 2 2-2m-2-2v4"/>
+            </svg>
+            Export Excel
+          </button>
+          <button type="button" onclick="exportToPDF()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm rounded text-white font-medium transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6"/>
+            </svg>
+            Export PDF
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 space-y-3 z-50"></div>
+
+  <!-- Script -->
+  <script>
+    let lastUserQuery = '';
+
+    async function handleQuery() {
+      const dbName = document.getElementById('db-select').value;
+      const userQuery = document.getElementById('natural-language-query').value;
+      lastUserQuery = userQuery;
+
+      if (!userQuery || !dbName) {
+        showToast("Please select a database and enter a query.", "warning");
+        return;
+      }
+
+      document.getElementById("export-buttons").classList.add("hidden");
+
+      document.getElementById('results').innerHTML = `
+        <div class="flex flex-col items-center justify-center py-6">
+          <div class="spinner"></div>
+          <div class="mt-2 text-gray-300">Generating Query Result...</div>
+        </div>
+      `;
+
+      const sqlResponse = await fetch('/generate_sql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_query: userQuery, db_name: dbName })
+      });
+
+      const sqlData = await sqlResponse.json();
+      if (sqlData.error) {
+        showToast("Error: " + sqlData.error, "error");
+        return;
+      }
+
+      document.getElementById('sql-query').value = sqlData.sql_query;
+
+      const executeResponse = await fetch('/execute_query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sql_query: sqlData.sql_query })
+      });
+
+      const resultsHtml = await executeResponse.text();
+      document.getElementById('results').innerHTML = resultsHtml;
+
+      if (document.querySelector("#results table")) {
+        document.getElementById("export-buttons").classList.remove("hidden");
+      }
+    }
+
+    function formatFilename(query, ext) {
+      return query.toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")  // Replace non-alphanumerics with underscore
+        .replace(/^_+|_+$/g, "")      // Trim underscores from start/end
+        .slice(0, 40) + "." + ext;    // Limit length + extension
+    }
+
+    function exportToExcel() {
+      const table = document.querySelector("#results table");
+      if (!table) return showToast("No results to export.", "warning");
+
+      const filename = formatFilename(lastUserQuery, 'xlsx');
+      const wb = XLSX.utils.table_to_book(table);
+      XLSX.writeFile(wb, filename);
+    }
+
+    function exportToPDF() {
+      const table = document.querySelector("#results table");
+      if (!table) return showToast("No results to export.", "warning");
+
+      const filename = formatFilename(lastUserQuery, 'pdf');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'pt', 'a4');
+      pdf.html(table, {
+        callback: function (doc) {
+          doc.save(filename);
+        },
+        x: 20,
+        y: 20
+      });
+    }
+
+    function copyToClipboard() {
+      const sqlText = document.getElementById("sql-query");
+      sqlText.select();
+      document.execCommand("copy");
+      showToast("SQL query copied to clipboard!");
+    }
+
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toast-container");
+      if (container.children.length >= 3) container.removeChild(container.firstChild);
+
+      const toast = document.createElement("div");
+      toast.className = `
+        px-4 py-3 rounded shadow-md text-white flex items-center justify-between space-x-4
+        ${type === "error" ? "bg-red-600" : type === "warning" ? "bg-yellow-500" : "bg-green-600"}
+        animate-slide-in
+      `;
+      toast.innerHTML = `
+        <span>${message}</span>
+        <button class="text-white hover:text-gray-200" onclick="this.parentElement.remove()">&times;</button>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.classList.add("opacity-0");
+          setTimeout(() => toast.remove(), 500);
+        }
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
