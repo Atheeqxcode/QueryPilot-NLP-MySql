@@ -2,12 +2,14 @@ import os
 import pandas as pd
 import requests
 import json
+from dotenv import load_dotenv
 
-# !!! CRITICAL: THE GEMINI API KEY IS HERE. !!!
-# !!! THE KEY YOU PROVIDED (yAIzaSyBVdzfDouVTrIulEpJQ6Ic27msELcVd--A) IS LIKELY INVALID. !!!
-# !!! THIS IS THE PRIMARY CAUSE OF THE '400 Client Error'. !!!
-# !!! PLEASE GET YOUR FULL, CORRECT API KEY FROM GOOGLE AI STUDIO / CLOUD CONSOLE AND REPLACE IT HERE. !!!
-GEMINI_API_KEY = "AIzaSyDfSNWry3hMqY7WedMeVHGIf4gnfjWyrfo"
+# Load environment variables from .env file
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+if not GEMINI_API_KEY:
+    raise RuntimeError("GEMINI_API_KEY not found in .env. Please check your .env file.")
 GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 
