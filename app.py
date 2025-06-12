@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, f
 import os
 import pandas as pd
 import sqlite3
+import smtplib
+from email.message import EmailMessage
 
 from execute_query import execute_query
 from generate_sql_query import generate_sql_query
@@ -216,6 +218,27 @@ def execute_sql_route():
                 return df_to_tailwind_table(results_df)
     except Exception as e:
         return f'<p class="text-red-500 text-center py-4">Execution Error: {e}</p>', 500
+
+@app.route('/contact', methods=['POST'])
+def contact():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    message = request.form.get('message')
+
+    msg = EmailMessage()
+    msg['Subject'] = f'QueryPilot Contact from {name}'
+    msg['From'] = email
+    msg['To'] = 'atheeqzee8@gmail.com'
+    msg.set_content(f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}")
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login('atheeqzee8@gmail.com', 'your_gmail_app_password')  # Use an app password if 2FA is enabled
+            smtp.send_message(msg)
+        flash('Message sent successfully!', 'success')
+    except Exception as e:
+        flash(f'Failed to send message: {e}', 'danger')
+    return redirect(url_for('home_page'))
 
 @app.route('/home')
 def home_page():
