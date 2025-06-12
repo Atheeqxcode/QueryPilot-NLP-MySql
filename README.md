@@ -3,3 +3,8 @@ NLP-Powered SQL Generator Generate SQL queries from plain English and view resul
 
 
 #Goto Master Branch For Code
+
+Live Website: https://querypilot-nlp-mysql.onrender.com/
+
+
+
